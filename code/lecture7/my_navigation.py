@@ -6,7 +6,6 @@ from actionlib_msgs.msg import *
 from tf.transformations import quaternion_from_euler
 from geometry_msgs.msg import Pose, Point, Quaternion
 import csv
-import time
 
 class RobotNavigation():
     def __init__(self):
