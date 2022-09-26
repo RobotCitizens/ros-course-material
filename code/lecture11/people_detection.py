@@ -17,7 +17,8 @@ class PeopleDetection(object):
     def __init__(self):
         self.bridge = CvBridge()
         rospy.init_node("object_detect", anonymous=True)
-        self.pub = rospy.Publisher("/vision/people_detect", Int64MultiArray, queue_size=10)
+        self.data_pub = rospy.Publisher("/vision/people_detect/data", Int64MultiArray, queue_size=10)
+        self.img_pub = rospy.Publisher("/vision/people_detect/image", Image, queue_size=10)
         rospy.Subscriber("/usb_cam/image_raw", Image, self.update_frame_callback)
         rospy.wait_for_message("/usb_cam/image_raw", Image)
 
@@ -66,11 +67,15 @@ class PeopleDetection(object):
                     if label == "person":
                         pub_data = Int64MultiArray()
                         pub_data.data = [x,y,w,h]
-                        self.pub.publish(pub_data)
+                        self.data_pub.publish(pub_data)
                         color = colors[i]
                         cv2.rectangle(frame, (x,y), (x+w, y+h), color, 2)
                         cv2.putText(frame, label, (x, y - 5), font, 1, color, 1)
-            cv2.imshow("Image", frame)
+            # Publish image into ROS topic
+            img_data = self.bridge.cv2_to_imgmsg(frame, encoding = "passthrough")
+            self.img_pub.publish(img_data)
+            # Show by imshow
+            # cv2.imshow("Image", frame)
             key = cv2.waitKey(1)
             if key == 27:
                 break
