@@ -5,8 +5,11 @@ import numpy as np
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import os
+import rospkg
 
-os.chdir("/home/pat/work_ws/src/your_package")
+path = rospkg.RosPack().get_path("your_package")
+
+os.chdir(path)
 
 class ObjectDetection(object):
 
